@@ -1,4 +1,8 @@
 using DiplomaAPI.Helpers;
+using DiplomaAPI.Repositories;
+using DiplomaAPI.Repositories.Interfaces;
+using DiplomaAPI.Services;
+using DiplomaAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<DapperContext>();
+builder.Services.AddScoped<IVideoRepository, VideoRepository>();
+builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddTransient<IVideoService, VideoService>();
+builder.Services.AddTransient<ITestService, TestService>();
+builder.Services.AddTransient<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 

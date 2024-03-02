@@ -6,9 +6,9 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         Task<IEnumerable<Test>> GetAll();
         Task<Test> GetById(int id);
-        Task<IEnumerable<Test>> GetByCategory();
-        Task<bool> Create(Test user);
-        Task<bool> Update(Test user);
+        Task<IEnumerable<Test>> GetByCategory(int categoryId);
+        Task<int> Create(Test test);
+        Task<bool> Update(Test test);
         Task<bool> Delete(int id);
     }
 }

@@ -1,33 +1,41 @@
 ﻿using DiplomaAPI.Entities;
+using DiplomaAPI.Repositories;
 using DiplomaAPI.Services.Interfaces;
 
 namespace DiplomaAPI.Services
 {
     public class CategoryService : ICategoryService
     {
-        public Task<bool> Create(Category model)
+        private readonly CategoryRepository _repository;
+
+        public CategoryService(CategoryRepository repository)
         {
-            throw new NotImplementedException();
+            _repository = repository;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<int> Create(Category model)
         {
-            throw new NotImplementedException();
+            return await _repository.Create(model);
         }
 
-        public Task<IEnumerable<Category>> GetAll()
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.Delete(id);
         }
 
-        public Task<Category> GetById(int id)
+        public async Task<IEnumerable<Category>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAll();
         }
 
-        public Task<bool> Update(int id, Category model)
+        public async Task<Category> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.GetById(id);
+        }
+
+        public async Task<bool> Update(int id, Category model)
+        {
+            return await _repository.Update(model);
         }
     }
 }

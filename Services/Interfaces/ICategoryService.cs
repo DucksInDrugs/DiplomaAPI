@@ -6,7 +6,7 @@ namespace DiplomaAPI.Services.Interfaces
     {
         Task<IEnumerable<Category>> GetAll();
         Task<Category> GetById(int id);
-        Task<bool> Create(Category model);
+        Task<int> Create(Category model);
         Task<bool> Update(int id, Category model);
         Task<bool> Delete(int id);
     }

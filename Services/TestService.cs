@@ -1,38 +1,46 @@
 ﻿using DiplomaAPI.Entities;
+using DiplomaAPI.Repositories;
 using DiplomaAPI.Services.Interfaces;
 
 namespace DiplomaAPI.Services
 {
     public class TestService : ITestService
     {
-        public Task<bool> Create(Test model)
+        private readonly TestRepository _repository;
+
+        public TestService(TestRepository repository)
         {
-            throw new NotImplementedException();
+            _repository = repository;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<int> Create(Test model)
         {
-            throw new NotImplementedException();
+            return await _repository.Create(model);
         }
 
-        public Task<IEnumerable<Test>> GetAll()
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.Delete(id);
         }
 
-        public Task<IEnumerable<Test>> GetByCategory()
+        public async Task<IEnumerable<Test>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAll();
         }
 
-        public Task<Test> GetById(int id)
+        public async Task<IEnumerable<Test>> GetByCategory(int categoryId)
         {
-            throw new NotImplementedException();
+            return await _repository.GetByCategory(categoryId);
         }
 
-        public Task<bool> Update(int id, Test model)
+        public async Task<Test> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.GetById(id);
+        }
+
+        public async Task<bool> Update(int id, Test model)
+        {
+            return await _repository.Update(model);
         }
     }
 }

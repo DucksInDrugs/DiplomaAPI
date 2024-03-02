@@ -6,8 +6,8 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         Task<IEnumerable<Category>> GetAll();
         Task<Category> GetById(int id);
-        Task<bool> Create(Category user);
-        Task<bool> Update(Category user);
+        Task<int> Create(Category category);
+        Task<bool> Update(Category category);
         Task<bool> Delete(int id);
     }
 }

@@ -1,38 +1,47 @@
 ﻿using DiplomaAPI.Entities;
+using DiplomaAPI.Repositories;
 using DiplomaAPI.Services.Interfaces;
+using System.Reflection;
 
 namespace DiplomaAPI.Services
 {
     public class VideoService : IVideoService
     {
-        public Task<bool> Create(Video model)
+        private readonly VideoRepository _repository;
+
+        public VideoService(VideoRepository repository)
         {
-            throw new NotImplementedException();
+            _repository = repository;
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<int> Create(Video model)
         {
-            throw new NotImplementedException();
+            return await _repository.Create(model);
         }
 
-        public Task<IEnumerable<Video>> GetAll()
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.Delete(id);
         }
 
-        public Task<IEnumerable<Video>> GetByCategory()
+        public async Task<IEnumerable<Video>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAll();
         }
 
-        public Task<Video> GetById(int id)
+        public async Task<IEnumerable<Video>> GetByCategory(int categoryId)
         {
-            throw new NotImplementedException();
+            return await _repository.GetByCategory(categoryId);
         }
 
-        public Task<bool> Update(int id, Video model)
+        public async Task<Video> GetById(int id)
         {
-            throw new NotImplementedException();
+            return await _repository.GetById(id);
+        }
+
+        public async Task<bool> Update(int id, Video model) //TODO: Какой-то прикол с id в Update, разобраться
+        {
+            return await _repository.Update(model);
         }
     }
 }

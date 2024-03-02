@@ -1,4 +1,5 @@
-﻿using DiplomaAPI.Entities;
+﻿using Dapper;
+using DiplomaAPI.Entities;
 using DiplomaAPI.Helpers;
 using DiplomaAPI.Repositories.Interfaces;
 using Npgsql;
@@ -15,34 +16,62 @@ namespace DiplomaAPI.Repositories
             _context = context;
         }
 
-        public Task<bool> Create(Video user)
+        public async Task<int> Create(Video video)
         {
-            throw new NotImplementedException();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "INSERT INTO Videos (Link, Title, Description, Author, PhotoUrl) VALUES (@Link, @Title, @Description, @Author, @PhotoUrl); SELECT SCOPE_IDENTITY();";
+                return await db.ExecuteScalarAsync<int>(query, video);
+            }
         }
 
-        public Task<bool> Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            throw new NotImplementedException();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "DELETE FROM Videos WHERE Id = @Id";
+                int rowsAffected = await db.ExecuteAsync(query, new { Id = id });
+                return rowsAffected > 0;
+            }
         }
 
-        public Task<IEnumerable<Video>> GetAll()
+        public async Task<IEnumerable<Video>> GetAll()
         {
-            throw new NotImplementedException();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "SELECT * FROM Videos";
+
+                IEnumerable<Video> videos = await db.QueryAsync<Video>(query);
+                return videos.ToList();
+            }
         }
 
-        public Task<IEnumerable<Video>> GetByCategory()
+        public async Task<IEnumerable<Video>> GetByCategory(int categoryId)
         {
-            throw new NotImplementedException();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "DELETE FROM Videos WHERE CategoryId = @CategoryId";
+                IEnumerable<Video> videos = await db.QueryAsync<Video>(query);
+                return videos.ToList();
+            }
         }
 
-        public Task<Video> GetById(int id)
+        public async Task<Video> GetById(int id)
         {
-            throw new NotImplementedException();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                return await db.QueryFirstOrDefaultAsync<Video>("SELECT * FROM Videos WHERE Id = @Id", new { Id = id });
+            }
         }
 
-        public Task<bool> Update(Video user)
+        public async Task<bool> Update(Video video)
         {
-            throw new NotImplementedException();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "UPDATE Videos SET Link = @Link, Title = @Title, Description = @Description, Author = @Author, PhotoUrl = @PhotoUrl WHERE Id = @Id";
+                int rowsAffected = await db.ExecuteAsync(query, video);
+                return rowsAffected > 0;
+            }
         }
     }
 }
