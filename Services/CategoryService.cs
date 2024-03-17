@@ -1,14 +1,15 @@
 ﻿using DiplomaAPI.Entities;
 using DiplomaAPI.Repositories;
+using DiplomaAPI.Repositories.Interfaces;
 using DiplomaAPI.Services.Interfaces;
 
 namespace DiplomaAPI.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly CategoryRepository _repository;
+        private readonly ICategoryRepository _repository;
 
-        public CategoryService(CategoryRepository repository)
+        public CategoryService(ICategoryRepository repository)
         {
             _repository = repository;
         }

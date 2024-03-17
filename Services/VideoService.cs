@@ -1,5 +1,6 @@
 ﻿using DiplomaAPI.Entities;
 using DiplomaAPI.Repositories;
+using DiplomaAPI.Repositories.Interfaces;
 using DiplomaAPI.Services.Interfaces;
 using System.Reflection;
 
@@ -7,9 +8,9 @@ namespace DiplomaAPI.Services
 {
     public class VideoService : IVideoService
     {
-        private readonly VideoRepository _repository;
+        private readonly IVideoRepository _repository;
 
-        public VideoService(VideoRepository repository)
+        public VideoService(IVideoRepository repository)
         {
             _repository = repository;
         }

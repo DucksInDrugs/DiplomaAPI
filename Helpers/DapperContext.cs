@@ -10,7 +10,7 @@ namespace DiplomaAPI.Helpers
         public DapperContext(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = _configuration.GetConnectionString("");
+            _connectionString = _configuration.GetConnectionString("SqlConnection");
         }
         public IDbConnection CreateConnection()
             => new NpgsqlConnection(_connectionString);

@@ -1,14 +1,15 @@
 ﻿using DiplomaAPI.Entities;
 using DiplomaAPI.Repositories;
+using DiplomaAPI.Repositories.Interfaces;
 using DiplomaAPI.Services.Interfaces;
 
 namespace DiplomaAPI.Services
 {
     public class TestService : ITestService
     {
-        private readonly TestRepository _repository;
+        private readonly ITestRepository _repository;
 
-        public TestService(TestRepository repository)
+        public TestService(ITestRepository repository)
         {
             _repository = repository;
         }

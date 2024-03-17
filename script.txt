@@ -1,0 +1,35 @@
+﻿-- Database: DiplomaDB
+
+-- DROP DATABASE IF EXISTS "DiplomaDB";
+
+CREATE DATABASE "DiplomaDB"
+    WITH
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Russian_Russia.1251'
+    LC_CTYPE = 'Russian_Russia.1251'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+	
+CREATE TABLE "Categories"(
+	id serial PRIMARY KEY,
+	title text,
+	photourl text
+);
+	
+CREATE TABLE "Tests"(
+	id serial PRIMARY KEY,
+	testbody jsonb,
+	categoryid integer REFERENCES "Categories"(id)
+);
+	
+CREATE TABLE "Videos"(
+	id serial PRIMARY KEY,
+	link text,
+	title text,
+	description text,
+	author text,
+	photourl text,
+	categoryid integer REFERENCES "Categories"(id)
+);

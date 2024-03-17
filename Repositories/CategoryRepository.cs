@@ -20,7 +20,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "INSERT INTO Videos (Smth) VALUES (@Smth); SELECT SCOPE_IDENTITY();";
+                const string query = "INSERT INTO \"Categories\" (Title, PhotoUrl) VALUES (@Title, @PhotoUrl); SELECT SCOPE_IDENTITY();";
                 return await db.ExecuteScalarAsync<int>(query, category);
             }
         }
@@ -29,7 +29,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "DELETE FROM Categories WHERE Id = @Id";
+                const string query = "DELETE FROM \"Categories\" WHERE Id = @Id";
                 int rowsAffected = await db.ExecuteAsync(query, new { Id = id });
                 return rowsAffected > 0;
             }
@@ -39,7 +39,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "SELECT * FROM Categories";
+                const string query = "SELECT * FROM \"Categories\"";
                 IEnumerable<Category> categories = await db.QueryAsync<Category>(query);
                 return categories.ToList();
             }
@@ -49,7 +49,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                return await db.QueryFirstOrDefaultAsync<Category>("SELECT * FROM Categories WHERE Id = @Id", new { Id = id });
+                return await db.QueryFirstOrDefaultAsync<Category>("SELECT * FROM \"Categories\" WHERE Id = @Id", new { Id = id });
             }
         }
 
@@ -57,7 +57,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "UPDATE Tests SET Smth = @Smth WHERE Id = @Id";
+                const string query = "UPDATE \"Categories\" SET Title = @Title, PhotoUrl = @PhotoUrl WHERE Id = @Id";
                 int rowsAffected = await db.ExecuteAsync(query, category);
                 return rowsAffected > 0;
             }

@@ -20,7 +20,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "INSERT INTO Tests (Smth) VALUES (@Smth); SELECT SCOPE_IDENTITY();";
+                const string query = "INSERT INTO \"Tests\" (TestBody, CategoryId) VALUES (@TestBody, @CategoryId); SELECT SCOPE_IDENTITY();";
                 return await db.ExecuteScalarAsync<int>(query, test);
             }
         }
@@ -29,7 +29,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "DELETE FROM Tests WHERE Id = @Id";
+                const string query = "DELETE FROM \"Tests\" WHERE Id = @Id";
                 int rowsAffected = await db.ExecuteAsync(query, new { Id = id });
                 return rowsAffected > 0;
             }
@@ -39,7 +39,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "SELECT * FROM Tests";
+                const string query = "SELECT * FROM \"Tests\"";
                 IEnumerable<Test> tests = await db.QueryAsync<Test>(query);
                 return tests.ToList();
             }
@@ -49,7 +49,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "DELETE FROM Tests WHERE CategoryId = @CategoryId";
+                const string query = "DELETE FROM \"Tests\" WHERE CategoryId = @CategoryId";
                 IEnumerable<Test> tests = await db.QueryAsync<Test>(query);
                 return tests.ToList();
             }
@@ -59,7 +59,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                return await db.QueryFirstOrDefaultAsync<Test>("SELECT * FROM Tests WHERE Id = @Id", new { Id = id });
+                return await db.QueryFirstOrDefaultAsync<Test>("SELECT * FROM \"Tests\" WHERE Id = @Id", new { Id = id });
             }
         }
 
@@ -67,7 +67,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "UPDATE Tests SET Smth = @Smth WHERE Id = @Id";
+                const string query = "UPDATE \"Tests\" SET TestBody = @TestBody, CategoryId = @CategoryId WHERE Id = @Id";
                 int rowsAffected = await db.ExecuteAsync(query, test);
                 return rowsAffected > 0;
             }

@@ -21,6 +21,12 @@ builder.Services.AddTransient<IVideoService, VideoService>();
 builder.Services.AddTransient<ITestService, TestService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 
+builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", 
+    builder =>
+    {
+        builder.WithOrigins("http://localhost:3000");
+    }));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,5 +39,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("CorsPolicy");
 
 app.Run();
