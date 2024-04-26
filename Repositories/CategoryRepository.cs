@@ -20,7 +20,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "INSERT INTO \"Categories\" (Title, PhotoUrl) VALUES (@Title, @PhotoUrl); SELECT SCOPE_IDENTITY();";
+                const string query = "INSERT INTO \"Categories\" (Title, PhotoUrl) VALUES (@Title, @PhotoUrl);";
                 return await db.ExecuteScalarAsync<int>(query, category);
             }
         }
@@ -40,6 +40,16 @@ namespace DiplomaAPI.Repositories
             using (IDbConnection db = _context.CreateConnection())
             {
                 const string query = "SELECT * FROM \"Categories\"";
+                IEnumerable<Category> categories = await db.QueryAsync<Category>(query);
+                return categories.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<Category>> GetFirstCategories()
+        {
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "SELECT * FROM \"Categories\" ORDER BY id DESC LIMIT 4";
                 IEnumerable<Category> categories = await db.QueryAsync<Category>(query);
                 return categories.ToList();
             }

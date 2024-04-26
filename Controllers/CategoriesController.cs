@@ -1,10 +1,12 @@
-﻿using DiplomaAPI.Entities;
+﻿using DiplomaAPI.Authorization;
+using DiplomaAPI.Entities;
 using DiplomaAPI.Models;
 using DiplomaAPI.Services;
 using DiplomaAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace DiplomaAPI.Controllers
 {
@@ -26,6 +28,14 @@ namespace DiplomaAPI.Controllers
             return Ok(categories);
         }
 
+        [HttpGet("FirstCategories")]
+        public async Task<ActionResult<IEnumerable<Categories>>> GetFirstCategories()
+        {
+            var categories = await _service.GetFirstCategories();
+            return Ok(categories);
+        }
+
+        [Authorize(Role.Admin)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Categories>> GetCategoryById(int id)
         {

@@ -29,6 +29,11 @@ namespace DiplomaAPI.Services
             return await _repository.GetAll();
         }
 
+        public async Task<IEnumerable<Category>> GetFirstCategories()
+        {
+            return await _repository.GetFirstCategories();
+        }
+
         public async Task<Category> GetById(int id)
         {
             return await _repository.GetById(id);

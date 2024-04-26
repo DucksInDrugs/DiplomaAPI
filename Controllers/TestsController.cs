@@ -36,7 +36,7 @@ namespace DiplomaAPI.Controllers
             return Ok(test);
         }
 
-        [HttpGet("{category}")]
+        [HttpGet("GetByСategory/{categoryId}")]
         public async Task<ActionResult<IEnumerable<Tests>>> GetTestsByCategory(int categoryId)
         {
             var tests = await _service.GetByCategory(categoryId);

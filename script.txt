@@ -33,3 +33,27 @@ CREATE TABLE "Videos"(
 	photourl text,
 	categoryid integer REFERENCES "Categories"(id)
 );
+
+CREATE TABLE "Users"(
+	id serial PRIMARY KEY,
+	username text NOT NULL,
+	email text NOT NULL UNIQUE,
+	passwordhash text NOT NULL,
+	role integer NOT NULL,
+	verificationtoken text,
+	resettoken text,
+	resettokenexpires timestamp
+);
+
+CREATE TABLE "RefreshTokens" (
+	id serial PRIMARY KEY,
+	accountid integer REFERENCES "Users"(id) NOT NULL,
+	token text,
+	expires timestamp NOT NULL,
+	created timestamp NOT NULL,
+	createdbyip text,
+	revoked timestamp,
+	revokedbyip text,
+	replacedbytoken text,
+	reasonrevoked text
+);

@@ -20,7 +20,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "INSERT INTO \"Videos\" (Link, Title, Description, Author, PhotoUrl) VALUES (@Link, @Title, @Description, @Author, @PhotoUrl); SELECT SCOPE_IDENTITY();";
+                const string query = "INSERT INTO \"Videos\" (Link, Title, Description, Author, PhotoUrl) VALUES (@Link, @Title, @Description, @Author, @PhotoUrl);";
                 return await db.ExecuteScalarAsync<int>(query, video);
             }
         }
