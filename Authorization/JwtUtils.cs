@@ -88,7 +88,7 @@ namespace DiplomaAPI.Authorization
 
             using (IDbConnection db = _context.CreateConnection())
             {
-                IEnumerable<RefreshToken>? token = db.Query<RefreshToken>("SELECT * FROM \"RefreshTokens\" WHERE Token = @Token", new { Token = refreshToken });
+                IEnumerable<RefreshToken>? token = db.Query<RefreshToken>("SELECT * FROM \"RefreshTokens\" WHERE Token = @Token", refreshToken );
 
                 // ensure token is unique by checking against db
                 var tokenIsUnique = !token.Any();

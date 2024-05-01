@@ -253,7 +253,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                User account = db.QueryFirstOrDefault<User>("SELECT * FROM \"User\" WHERE Id = @Id", new { Id = id});
+                User account = db.QueryFirstOrDefault<User>("SELECT * FROM \"Users\" WHERE Id = @Id", new { Id = id});
                 if (account == null) throw new KeyNotFoundException("Account not found");
                 return account;
             }            
@@ -269,7 +269,7 @@ namespace DiplomaAPI.Repositories
                     throw new Exception("Invalid token");
                 }
                 User account = GetAccount(refreshToken.UserId);
-
+                account.RefreshTokens.Add(refreshToken);
                 return account;
             }
 /*                var account = _context.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
