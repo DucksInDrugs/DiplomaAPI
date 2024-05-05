@@ -5,14 +5,17 @@ namespace DiplomaAPI.Models.Users
 {
     public class UpdateRequest
     {
-        private string _password;
-        private string _confirmPassword;
-        private string _role;
-        private string _email;
+        public string? Password { get; set; }
+        [Compare("Password")]
+        public string? ConfirmPassword { get; set; }
+        [EnumDataType(typeof(Role))]
+        public string Role { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
 
         public string Username { get; set; }
 
-        [EnumDataType(typeof(Role))]
+        /*[EnumDataType(typeof(Role))]
         public string Role
         {
             get => _role;
@@ -38,7 +41,7 @@ namespace DiplomaAPI.Models.Users
         {
             get => _confirmPassword;
             set => _confirmPassword = replaceEmptyWithNull(value);
-        }
+        }*/
 
         // helpers
 

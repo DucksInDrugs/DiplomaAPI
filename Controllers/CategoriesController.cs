@@ -67,7 +67,7 @@ namespace DiplomaAPI.Controllers
             category.Id = id;
             if (await _service.Update(id, category))
             {
-                return NoContent();
+                return CreatedAtAction(nameof(GetCategoryById), new { id = id }, category);
             }
             return StatusCode(500, "Internal server error");
         }
@@ -83,7 +83,7 @@ namespace DiplomaAPI.Controllers
 
             if (await _service.Delete(id))
             {
-                return NoContent();
+                return Ok(new { message = "Category deleted successfully" });
             }
             return StatusCode(500, "Internal server error");
         }
