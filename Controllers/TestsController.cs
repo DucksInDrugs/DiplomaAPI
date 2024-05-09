@@ -1,4 +1,5 @@
-﻿using DiplomaAPI.Entities;
+﻿using DiplomaAPI.Authorization;
+using DiplomaAPI.Entities;
 using DiplomaAPI.Models;
 using DiplomaAPI.Services;
 using DiplomaAPI.Services.Interfaces;
@@ -43,6 +44,7 @@ namespace DiplomaAPI.Controllers
             return Ok(tests);
         }
 
+        [Authorize(Role.Admin)]
         [HttpPost]
         public async Task<ActionResult<Tests>> CreateTest(Test test)
         {
@@ -51,6 +53,7 @@ namespace DiplomaAPI.Controllers
             return CreatedAtAction(nameof(GetTestById), new { id = newTestId }, test);
         }
 
+        [Authorize(Role.Admin)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTest(int id, Test test)
         {
