@@ -63,7 +63,7 @@ namespace DiplomaAPI.Repositories
                 RemoveOldRefreshTokens(account);
 
                 // save changes to db
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
                 db.Execute(updateQuery, account);
 
 
@@ -94,7 +94,7 @@ namespace DiplomaAPI.Repositories
                 // hash password
                 account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, VerificationToken, ResetToken, ResetTokenExpires) VALUES (@Username, @Email, @PasswordHash, @Role, @VerificationToken, @ResetToken, @ResetTokenExpires);";
+                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, VerificationToken, ResetToken, ResetTokenExpires, Progress) VALUES (@Username, @Email, @PasswordHash, @Role, @VerificationToken, @ResetToken, @ResetTokenExpires, @Progress);";
                 db.Execute(createQuery, account);
 
                 return _mapper.Map<AccountResponse>(account);
@@ -138,7 +138,7 @@ namespace DiplomaAPI.Repositories
                 RevokeDescendantRefreshTokens(refreshToken, account, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
                 using (IDbConnection db = _context.CreateConnection())
                 {
-                    const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires WHERE Id = @Id";
+                    const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
                     db.Execute(updateQuery, account);
                 }
             }
@@ -148,15 +148,20 @@ namespace DiplomaAPI.Repositories
 
             // replace old refresh token with a new one (rotate token)
             var newRefreshToken = RotateRefreshToken(refreshToken, ipAddress);
+            newRefreshToken.UserId = account.Id;
             account.RefreshTokens.Add(newRefreshToken);
-
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string createQuery = "INSERT INTO \"RefreshTokens\" (UserId, Token, Expires, Created, CreatedByIp, Revoked, RevokedByIp, ReplacedByToken, ReasonRevoked) VALUES (@UserId, @Token, @Expires, @Created, @CreatedByIp, @Revoked, @RevokedByIp, @ReplacedByToken, @ReasonRevoked);";
+                db.Execute(createQuery, newRefreshToken);
+            }
             // remove old refresh tokens from account
             RemoveOldRefreshTokens(account);
 
             // save changes to db
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
                 db.Execute(updateQuery, account);
             }
 
@@ -193,7 +198,7 @@ namespace DiplomaAPI.Repositories
                 // hash password
                 account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, VerificationToken, ResetToken, ResetTokenExpires) VALUES (@Username, @Email, @PasswordHash, @Role, @VerificationToken, @ResetToken, @ResetTokenExpires);";
+                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, VerificationToken, ResetToken, ResetTokenExpires, Progress) VALUES (@Username, @Email, @PasswordHash, @Role, @VerificationToken, @ResetToken, @ResetTokenExpires, @Progress);";
                 db.Execute(createQuery, account);
             }
         }
@@ -210,7 +215,7 @@ namespace DiplomaAPI.Repositories
             RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
                 db.Execute(updateQuery, account);
             }
         }
@@ -235,21 +240,37 @@ namespace DiplomaAPI.Repositories
                 // copy model to account and save
                 _mapper.Map(model, account);
 
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
                 db.Execute(updateQuery, account);
 
                 return _mapper.Map<AccountResponse>(account);
             }
         }
 
-/*        public void ValidateResetToken(ValidateResetTokenRequest model)
+        public AccountResponse UpdateProgress(int id, ProgressRequest model)
         {
-            GetAccountByResetToken(model.Token);
-        }*/
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                var account = GetAccount(id);
 
-        //
+                // copy model to account and save
+                _mapper.Map(model, account);
 
-        private User GetAccount(int id)
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
+                db.Execute(updateQuery, account);
+
+                return _mapper.Map<AccountResponse>(account);
+            }
+        }
+
+            /*        public void ValidateResetToken(ValidateResetTokenRequest model)
+                    {
+                        GetAccountByResetToken(model.Token);
+                    }*/
+
+            //
+
+            private User GetAccount(int id)
         {
             using (IDbConnection db = _context.CreateConnection())
             {

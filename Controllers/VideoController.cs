@@ -37,7 +37,7 @@ namespace DiplomaAPI.Controllers
         }
 
         [HttpGet("GetByСategory/{categoryId}")]
-        public async Task<ActionResult<IEnumerable<Videos>>> GetVideosByCategory(int categoryId)
+        public async Task<ActionResult<Videos>> GetVideoByCategory(int categoryId)
         {
             var videos = await _service.GetByCategory(categoryId);
             return Ok(videos);
@@ -63,7 +63,7 @@ namespace DiplomaAPI.Controllers
             video.Id = id;
             if (await _service.Update(id, video))
             {
-                return NoContent();
+                return CreatedAtAction(nameof(GetVideoById), new { id = id }, video);
             }
             return StatusCode(500, "Internal server error");
         }

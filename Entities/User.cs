@@ -11,7 +11,8 @@
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
         public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
-
+        public double Progress { get; set; }
+            
         public bool OwnsToken(string token)
         {
             return RefreshTokens?.Find(x => x.Token == token) != null;

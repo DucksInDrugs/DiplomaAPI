@@ -28,6 +28,7 @@ builder.Services.AddScoped<IVideoRepository, VideoRepository>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICompletedTaskRepository, CompletedTaskRepository>();
 
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
@@ -35,6 +36,7 @@ builder.Services.AddTransient<IVideoService, VideoService>();
 builder.Services.AddTransient<ITestService, TestService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<ICompletedTaskService, CompletedTaskService>();
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", 
     builder =>

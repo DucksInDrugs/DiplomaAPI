@@ -150,6 +150,13 @@ namespace DiplomaAPI.Controllers
             return Ok(new { message = "Account deleted successfully" });
         }
 
+        [HttpPut("UpdateProgress/{id:int}")]
+        public ActionResult<AccountResponse> UpdateProgress(int id, ProgressRequest model)
+        {
+            var account = _userService.UpdateProgress(id, model);
+            return Ok(account);
+        }
+
         // helper methods
 
         private void setTokenCookie(string token)

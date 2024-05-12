@@ -10,5 +10,6 @@ namespace DiplomaAPI.Services.Interfaces
         Task<int> Create(Category model);
         Task<bool> Update(int id, Category model);
         Task<bool> Delete(int id);
+        Task<IEnumerable<Category>> GetByRole(string role);
     }
 }

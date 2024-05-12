@@ -17,6 +17,8 @@ namespace DiplomaAPI.Helpers
 
             CreateMap<CreateRequest, User>();
 
+            CreateMap<ProgressRequest, User>();
+
             CreateMap<UpdateRequest, User>()
                 .ForAllMembers(x => x.Condition(
                     (src, dest, prop) =>

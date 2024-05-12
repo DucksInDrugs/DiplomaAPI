@@ -60,7 +60,7 @@ namespace DiplomaAPI.Controllers
             var existingTest = await _service.GetById(id);
             if (existingTest == null)
             {
-                return NotFound();
+                return CreatedAtAction(nameof(GetTestById), new { id = id }, test);
             }
 
             test.Id = id;

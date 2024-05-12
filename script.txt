@@ -15,6 +15,7 @@ CREATE DATABASE "DiplomaDB"
 CREATE TABLE "Categories"(
 	id serial PRIMARY KEY,
 	title text,
+	role integer NOT NULL,
 	photourl text
 );
 	
@@ -30,9 +31,6 @@ CREATE TABLE "Videos"(
 	id serial PRIMARY KEY,
 	link text,
 	title text,
-	description text,
-	author text,
-	photourl text,
 	categoryid integer REFERENCES "Categories"(id)
 );
 
@@ -44,7 +42,8 @@ CREATE TABLE "Users"(
 	role integer NOT NULL,
 	verificationtoken text,
 	resettoken text,
-	resettokenexpires timestamp
+	resettokenexpires timestamp,
+	progress real NOT NULL DEFAULT 0
 );
 
 CREATE TABLE "RefreshTokens" (
@@ -58,4 +57,10 @@ CREATE TABLE "RefreshTokens" (
 	revokedbyip text,
 	replacedbytoken text,
 	reasonrevoked text
+);
+
+CREATE TABLE "CompletedTasks"(
+	id serial PRIMARY KEY,
+	categoryid integer REFERENCES "Categories"(id) NOT NULL,
+	userid integer REFERENCES "Users"(id) NOT NULL
 );

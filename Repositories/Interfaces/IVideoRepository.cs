@@ -5,7 +5,7 @@ namespace DiplomaAPI.Repositories.Interfaces
     public interface IVideoRepository
     {
         Task<IEnumerable<Video>> GetAll();
-        Task<IEnumerable<Video>> GetByCategory(int categoryId);
+        Task<Video> GetByCategory(int categoryId);
         Task<Video> GetById(int id);
         Task<int> Create(Video video);
         Task<bool> Update(Video video);

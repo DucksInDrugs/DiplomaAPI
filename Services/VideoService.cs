@@ -30,7 +30,7 @@ namespace DiplomaAPI.Services
             return await _repository.GetAll();
         }
 
-        public async Task<IEnumerable<Video>> GetByCategory(int categoryId)
+        public async Task<Video> GetByCategory(int categoryId)
         {
             return await _repository.GetByCategory(categoryId);
         }

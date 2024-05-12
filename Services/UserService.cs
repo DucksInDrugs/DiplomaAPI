@@ -70,10 +70,15 @@ namespace DiplomaAPI.Services
             return _repository.Update(id, model);
         }
 
-/*        public void ValidateResetToken(ValidateResetTokenRequest model)
+        public AccountResponse UpdateProgress(int id, ProgressRequest model)
         {
-            _repository.ValidateResetToken(model);
-        }*/
+            return _repository.UpdateProgress(id, model);
+        }
+
+        /*        public void ValidateResetToken(ValidateResetTokenRequest model)
+                {
+                    _repository.ValidateResetToken(model);
+                }*/
 
         /*private void sendVerificationEmail(User account, string origin)
         {

@@ -5,7 +5,7 @@ namespace DiplomaAPI.Services.Interfaces
     public interface IVideoService
     {
         Task<IEnumerable<Video>> GetAll();
-        Task<IEnumerable<Video>> GetByCategory(int categoryId);
+        Task<Video> GetByCategory(int categoryId);
         Task<Video> GetById(int id);
         Task<int> Create(Video model);
         Task<bool> Update(int id, Video model);

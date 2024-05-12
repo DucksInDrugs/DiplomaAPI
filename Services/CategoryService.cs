@@ -43,5 +43,10 @@ namespace DiplomaAPI.Services
         {
             return await _repository.Update(model);
         }
+
+        public async Task<IEnumerable<Category>> GetByRole(string role)
+        {
+            return await _repository.GetByRole(role);
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "INSERT INTO \"Videos\" (Link, Title, Description, Author, PhotoUrl) VALUES (@Link, @Title, @Description, @Author, @PhotoUrl);";
+                const string query = "INSERT INTO \"Videos\" (Link, Title, CategoryId) VALUES (@Link, @Title, @CategoryId);";
                 return await db.ExecuteScalarAsync<int>(query, video);
             }
         }
@@ -46,13 +46,11 @@ namespace DiplomaAPI.Repositories
             }
         }
 
-        public async Task<IEnumerable<Video>> GetByCategory(int categoryId)
+        public async Task<Video> GetByCategory(int categoryId)
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "DELETE FROM \"Videos\" WHERE CategoryId = @CategoryId";
-                IEnumerable<Video> videos = await db.QueryAsync<Video>(query);
-                return videos.ToList();
+                return await db.QueryFirstOrDefaultAsync<Video>("SELECT * FROM \"Videos\" WHERE CategoryId = @CategoryId", new { CategoryId = categoryId });
             }
         }
 
@@ -68,7 +66,7 @@ namespace DiplomaAPI.Repositories
         {
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string query = "UPDATE \"Videos\" SET Link = @Link, Title = @Title, Description = @Description, Author = @Author, PhotoUrl = @PhotoUrl WHERE Id = @Id";
+                const string query = "UPDATE \"Videos\" SET Link = @Link, Title = @Title, CategoryId = @CategoryId WHERE Id = @Id";
                 int rowsAffected = await db.ExecuteAsync(query, video);
                 return rowsAffected > 0;
             }

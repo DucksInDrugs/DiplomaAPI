@@ -87,5 +87,16 @@ namespace DiplomaAPI.Controllers
             }
             return StatusCode(500, "Internal server error");
         }
+
+        [HttpGet("CategoriesByRole/{role}")]
+        public async Task<ActionResult<Categories>> GetCategoryByRole(string role)
+        {
+            var category = await _service.GetByRole(role);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return Ok(category);
+        }
     }
 }

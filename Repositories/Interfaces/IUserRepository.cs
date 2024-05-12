@@ -16,6 +16,7 @@ namespace DiplomaAPI.Repositories.Interfaces
         AccountResponse GetById(int id);
         AccountResponse Create(CreateRequest model);
         AccountResponse Update(int id, UpdateRequest model);
+        AccountResponse UpdateProgress(int id, ProgressRequest model);
         void Delete(int id);
     }
 }
