@@ -18,5 +18,6 @@ namespace DiplomaAPI.Services.Interfaces
         AccountResponse Update(int id, UpdateRequest model);
         AccountResponse UpdateProgress(int id, ProgressRequest model);
         void Delete(int id);
+        void UploadProfiles(List<UploadProfilesRequest> model);
     }
 }

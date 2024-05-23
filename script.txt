@@ -24,7 +24,9 @@ CREATE TABLE "Tests"(
 	question text NOT NULL,
 	testbody jsonb NOT NULL,
 	testname text NOT NULL,
-	categoryid integer REFERENCES "Categories"(id) NOT NULL
+	categoryid integer REFERENCES "Categories"(id) NOT NULL,
+	videourl text,
+	imageurl text,
 );
 	
 CREATE TABLE "Videos"(
@@ -43,7 +45,8 @@ CREATE TABLE "Users"(
 	verificationtoken text,
 	resettoken text,
 	resettokenexpires timestamp,
-	progress real NOT NULL DEFAULT 0
+	progress real NOT NULL DEFAULT 0,
+	groupid integer REFERENCES "Groups"(id)
 );
 
 CREATE TABLE "RefreshTokens" (
@@ -63,4 +66,35 @@ CREATE TABLE "CompletedTasks"(
 	id serial PRIMARY KEY,
 	categoryid integer REFERENCES "Categories"(id) NOT NULL,
 	userid integer REFERENCES "Users"(id) NOT NULL
+);
+
+CREATE TABLE "Groups" (
+	id serial PRIMARY KEY,
+	name text NOT NULL
+);
+
+CREATE TABLE "TestResults" (
+	id serial PRIMARY KEY,
+	userid integer REFERENCES "Users"(id) NOT NULL,
+	result text NOT NULL,
+	passdate timestamp NOT NULL,
+	categoryid integer REFERENCES "Categories"(id) NOT NULL,
+	groupid integer REFERENCES "Groups"(id)
+);
+
+CREATE TABLE "RandomTasks" (
+	id serial PRIMARY KEY,
+	videourl text,
+	imageurl text,
+	correctanswer text NOT NULL
+);
+
+CREATE TABLE "Articles" (
+	id serial PRIMARY KEY,
+	title text NOT NULL,
+	description text NOT NULL,
+	htmltext text NOT NULL,
+	imageurl text NOT NULL,
+	role integer NOT NULL,
+	groupid integer REFERENCES "Groups"(id)
 );

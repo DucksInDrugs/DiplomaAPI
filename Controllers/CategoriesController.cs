@@ -12,7 +12,7 @@ namespace DiplomaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase//Добавить гетпо категориям
+    public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
 
@@ -35,7 +35,7 @@ namespace DiplomaAPI.Controllers
             return Ok(categories);
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Categories>> GetCategoryById(int id)
         {
@@ -47,6 +47,7 @@ namespace DiplomaAPI.Controllers
             return Ok(category);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpPost]
         public async Task<ActionResult<Categories>> CreateCategory(Category category)
         {
@@ -55,6 +56,7 @@ namespace DiplomaAPI.Controllers
             return CreatedAtAction(nameof(GetCategoryById), new { id = newCategoryId }, category);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, Category category)
         {
@@ -72,6 +74,7 @@ namespace DiplomaAPI.Controllers
             return StatusCode(500, "Internal server error");
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
@@ -89,7 +92,7 @@ namespace DiplomaAPI.Controllers
         }
 
         [HttpGet("CategoriesByRole/{role}")]
-        public async Task<ActionResult<Categories>> GetCategoryByRole(string role)
+        public async Task<ActionResult<IEnumerable<Categories>>> GetCategoryByRole(string role)
         {
             var category = await _service.GetByRole(role);
             if (category == null)

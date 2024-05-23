@@ -75,6 +75,11 @@ namespace DiplomaAPI.Services
             return _repository.UpdateProgress(id, model);
         }
 
+        public void UploadProfiles(List<UploadProfilesRequest> model)
+        {
+            _repository.UploadProfiles(model);
+        }
+
         /*        public void ValidateResetToken(ValidateResetTokenRequest model)
                 {
                     _repository.ValidateResetToken(model);

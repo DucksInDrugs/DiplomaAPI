@@ -1,4 +1,5 @@
-﻿using DiplomaAPI.Entities;
+﻿using DiplomaAPI.Authorization;
+using DiplomaAPI.Entities;
 using DiplomaAPI.Models;
 using DiplomaAPI.Services;
 using DiplomaAPI.Services.Interfaces;
@@ -18,6 +19,7 @@ namespace DiplomaAPI.Controllers
             _service = service;
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Videos>>> GetAllVideos()
         {
@@ -25,6 +27,7 @@ namespace DiplomaAPI.Controllers
             return Ok(videos);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Videos>> GetVideoById(int id)
         {
@@ -43,6 +46,7 @@ namespace DiplomaAPI.Controllers
             return Ok(videos);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpPost]
         public async Task<ActionResult<Videos>> CreateVideo(Video video)
         {
@@ -51,6 +55,7 @@ namespace DiplomaAPI.Controllers
             return CreatedAtAction(nameof(GetVideoById), new { id = newVideoId }, video);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVideo(int id, Video video)
         {
@@ -68,6 +73,7 @@ namespace DiplomaAPI.Controllers
             return StatusCode(500, "Internal server error");
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(int id)
         {

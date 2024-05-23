@@ -4,6 +4,8 @@
     {
         Admin,
         User,
-        SpecialUser
+        SpecialUser,
+        SuperTeacher,
+        Teacher
     }
 }

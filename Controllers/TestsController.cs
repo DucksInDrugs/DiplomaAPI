@@ -19,6 +19,7 @@ namespace DiplomaAPI.Controllers
             _service = service;
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tests>>> GetAllTests()
         {
@@ -26,6 +27,7 @@ namespace DiplomaAPI.Controllers
             return Ok(tests);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Tests>> GetTestById(int id)
         {
@@ -44,7 +46,7 @@ namespace DiplomaAPI.Controllers
             return Ok(tests);
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpPost]
         public async Task<ActionResult<Tests>> CreateTest(Test test)
         {
@@ -53,7 +55,7 @@ namespace DiplomaAPI.Controllers
             return CreatedAtAction(nameof(GetTestById), new { id = newTestId }, test);
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTest(int id, Test test)
         {
@@ -66,11 +68,12 @@ namespace DiplomaAPI.Controllers
             test.Id = id;
             if (await _service.Update(id, test))
             {
-                return NoContent();
+                return Ok(test);
             }
             return StatusCode(500, "Internal server error");
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTest(int id)
         {

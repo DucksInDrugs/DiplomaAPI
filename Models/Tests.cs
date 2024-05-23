@@ -7,6 +7,8 @@
         public List<AnswerModel> TestBody { get; set; }
         public int CategoryId { get; set; }
         public string TestName { get; set; }
+        public string? ImageUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         public class AnswerModel
         {

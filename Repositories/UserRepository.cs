@@ -47,7 +47,7 @@ namespace DiplomaAPI.Repositories
 
                 // validate
                 if (account == null || !BCrypt.Net.BCrypt.Verify(model.Password, account.PasswordHash))
-                    throw new Exception("Email or password is incorrect");
+                    throw new AppException("Неверный логин или пароль");
 
                 // authentication successful so generate jwt and refresh tokens
                 var jwtToken = _jwtUtils.GenerateJwtToken(account);
@@ -63,7 +63,7 @@ namespace DiplomaAPI.Repositories
                 RemoveOldRefreshTokens(account);
 
                 // save changes to db
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, Progress = @Progress, GroupId = @GroupId WHERE Id = @Id";
                 db.Execute(updateQuery, account);
 
 
@@ -83,7 +83,7 @@ namespace DiplomaAPI.Repositories
                 int rowsAffected = db.Execute(query, new { Email = model.Email });
                 if (rowsAffected > 0)
                 {
-                    throw new Exception($"Email '{model.Email}' is already registered");
+                    throw new AppException($"Email '{model.Email}' уже был зарегистрирован");
                 }
 
                 // map model to new account object
@@ -94,7 +94,7 @@ namespace DiplomaAPI.Repositories
                 // hash password
                 account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, VerificationToken, ResetToken, ResetTokenExpires, Progress) VALUES (@Username, @Email, @PasswordHash, @Role, @VerificationToken, @ResetToken, @ResetTokenExpires, @Progress);";
+                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, Progress, GroupId) VALUES (@Username, @Email, @PasswordHash, @Role, @Progress, @GroupId);";
                 db.Execute(createQuery, account);
 
                 return _mapper.Map<AccountResponse>(account);
@@ -138,13 +138,13 @@ namespace DiplomaAPI.Repositories
                 RevokeDescendantRefreshTokens(refreshToken, account, ipAddress, $"Attempted reuse of revoked ancestor token: {token}");
                 using (IDbConnection db = _context.CreateConnection())
                 {
-                    const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
+                    const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, Progress = @Progress, GroupId = @GroupId WHERE Id = @Id";
                     db.Execute(updateQuery, account);
                 }
             }
 
             if (!refreshToken.IsActive)
-                throw new Exception("Invalid token");
+                throw new AppException("Неверный токен");
 
             // replace old refresh token with a new one (rotate token)
             var newRefreshToken = RotateRefreshToken(refreshToken, ipAddress);
@@ -161,7 +161,7 @@ namespace DiplomaAPI.Repositories
             // save changes to db
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, Progress = @Progress WHERE Id = @Id";
                 db.Execute(updateQuery, account);
             }
 
@@ -185,7 +185,7 @@ namespace DiplomaAPI.Repositories
                 // validate
                 if (users.Any(x => x.Email == model.Email))
                 {
-                    throw new Exception($"Email '{model.Email}' is already registered");
+                    throw new AppException($"Email '{model.Email}' уже был зарегистрирован");
                 }
 
                 // map model to new account object
@@ -198,7 +198,7 @@ namespace DiplomaAPI.Repositories
                 // hash password
                 account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, VerificationToken, ResetToken, ResetTokenExpires, Progress) VALUES (@Username, @Email, @PasswordHash, @Role, @VerificationToken, @ResetToken, @ResetTokenExpires, @Progress);";
+                const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, Progress) VALUES (@Username, @Email, @PasswordHash, @Role, @Progress);";
                 db.Execute(createQuery, account);
             }
         }
@@ -209,14 +209,14 @@ namespace DiplomaAPI.Repositories
             var refreshToken = account.RefreshTokens.Single(x => x.Token == token);
 
             if (!refreshToken.IsActive)
-                throw new Exception("Invalid token");
+                throw new AppException("Неверный токен");
 
             // revoke token and save
             RevokeRefreshToken(refreshToken, ipAddress, "Revoked without replacement");
             using (IDbConnection db = _context.CreateConnection())
             {
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
-                db.Execute(updateQuery, account);
+                const string updateQuery = "UPDATE \"RefreshTokens\" SET UserId = @UserId, Token = @Token, Expires = @Expires, Created = @Created, CreatedByIp = @CreatedByIp, Revoked = @Revoked, RevokedByIp = @RevokedByIp, ReplacedByToken = @ReplacedByToken, ReasonRevoked = @ReasonRevoked WHERE Id = @Id";
+                db.Execute(updateQuery, refreshToken);
             }
         }
 
@@ -231,7 +231,7 @@ namespace DiplomaAPI.Repositories
 
                 // validate
                 if (account.Email != model.Email && users.Any())
-                    throw new Exception($"Email '{model.Email}' is already registered");
+                    throw new AppException($"Email '{model.Email}' уже был зарегистрирован");
 
                 // hash password if it was entered
                 if (!string.IsNullOrEmpty(model.Password))
@@ -240,7 +240,7 @@ namespace DiplomaAPI.Repositories
                 // copy model to account and save
                 _mapper.Map(model, account);
 
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, Progress = @Progress, GroupId = @GroupId WHERE Id = @Id";
                 db.Execute(updateQuery, account);
 
                 return _mapper.Map<AccountResponse>(account);
@@ -256,19 +256,65 @@ namespace DiplomaAPI.Repositories
                 // copy model to account and save
                 _mapper.Map(model, account);
 
-                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, VerificationToken = @VerificationToken, ResetToken = @ResetToken, ResetTokenExpires = @ResetTokenExpires, Progress = @Progress WHERE Id = @Id";
+                const string updateQuery = "UPDATE \"Users\" SET Username = @Username, Email = @Email, PasswordHash = @PasswordHash, Role = @Role, Progress = @Progress WHERE Id = @Id";
                 db.Execute(updateQuery, account);
 
                 return _mapper.Map<AccountResponse>(account);
             }
         }
 
-            /*        public void ValidateResetToken(ValidateResetTokenRequest model)
+        public async void UploadProfiles(List<UploadProfilesRequest> model)
+        {
+            List<Group> groups = new List<Group>();
+            using (IDbConnection db = _context.CreateConnection())
+            {
+                const string query = "SELECT * FROM \"Groups\"";
+                IEnumerable<Group> allGroups = await db.QueryAsync<Group>(query);
+                groups = allGroups.ToList();
+            }
+            foreach (var uploadProfile in model)
+            {
+                Group? group = groups.FirstOrDefault(group => group.Name == uploadProfile.Group);
+                if (group != null)
+                {
+                    using (IDbConnection db = _context.CreateConnection())
                     {
-                        GetAccountByResetToken(model.Token);
-                    }*/
+                        const string getAllUsersQuery = "SELECT * FROM \"Users\" WHERE Email = @Email";
+                        int rowsAffected = db.Execute(getAllUsersQuery, new { Email = uploadProfile.Email });
+                        if (rowsAffected > 0)
+                        {
+                            throw new AppException($"Email '{uploadProfile.Email}' уже был зарегистрирован");
+                        }
+                        string PasswordHash = BCrypt.Net.BCrypt.HashPassword(uploadProfile.Email);
 
-            //
+                        const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, Progress, GroupId) VALUES (@Username, @Email, @PasswordHash, @Role, @Progress, @GroupId);";
+                        await db.ExecuteAsync(createQuery, new { uploadProfile.Username, uploadProfile.Email, PasswordHash, Role = 1, Progress = 0, GroupId = group.Id });
+                    }
+                }
+                else
+                {
+                    using (IDbConnection db = _context.CreateConnection())
+                    {
+                        const string query = "INSERT INTO \"Groups\" (Name) VALUES (@Name);";
+                        await db.ExecuteAsync(query, new { Name = uploadProfile.Group });
+                        Group addedGroup = await db.QueryFirstOrDefaultAsync<Group>("SELECT * FROM \"Groups\" WHERE Name = @Name", new { Name = uploadProfile.Group });
+                        groups.Add(new Group(addedGroup.Id, addedGroup.Name));
+
+                        const string getAllUsersQuery = "SELECT * FROM \"Users\" WHERE Email = @Email";
+                        int rowsAffected = db.Execute(getAllUsersQuery, new { Email = uploadProfile.Email });
+                        if (rowsAffected > 0)
+                        {
+                            throw new AppException($"Email '{uploadProfile.Email}' уже был зарегистрирован");
+                        }
+                        string PasswordHash = BCrypt.Net.BCrypt.HashPassword(uploadProfile.Email);
+
+                        const string createQuery = "INSERT INTO \"Users\" (Username, Email, PasswordHash, Role, Progress, GroupId) VALUES (@Username, @Email, @PasswordHash, @Role, @Progress, @GroupId);";
+                        await db.ExecuteAsync(createQuery, new { uploadProfile.Username, uploadProfile.Email, PasswordHash, Role = 1, Progress = 0, GroupId = addedGroup.Id});
+
+                    }
+                }
+            }
+        }
 
             private User GetAccount(int id)
         {
@@ -287,15 +333,12 @@ namespace DiplomaAPI.Repositories
                 RefreshToken? refreshToken = db.QueryFirstOrDefault<RefreshToken>("SELECT * FROM \"RefreshTokens\" WHERE Token = @Token", new { Token = token });
                 if (refreshToken == null)
                 {
-                    throw new Exception("Invalid token");
+                    throw new AppException("Неверный токен");
                 }
                 User account = GetAccount(refreshToken.UserId);
                 account.RefreshTokens.Add(refreshToken);
                 return account;
             }
-/*                var account = _context.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
-            if (account == null) throw new Exception("Invalid token");*/
-            
         }
 
 /*        private User GetAccountByResetToken(string token)
@@ -333,7 +376,7 @@ namespace DiplomaAPI.Repositories
             return token;
         }*/
 
-        private string GenerateVerificationToken()
+        /*private string GenerateVerificationToken()
         {
             // token is a cryptographically strong random sequence of values
             var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
@@ -351,7 +394,7 @@ namespace DiplomaAPI.Repositories
                 return token;
             }
                 
-        }
+        }*/
 
         private RefreshToken RotateRefreshToken(RefreshToken refreshToken, string ipAddress)
         {

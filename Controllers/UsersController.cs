@@ -25,8 +25,8 @@ namespace DiplomaAPI.Controllers
         [HttpPost("authenticate")]
         public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
         {
-            var response = _userService.Authenticate(model, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response = _userService.Authenticate(model, IpAddress());
+            SetTokenCookie(response.RefreshToken);
             return Ok(response);
         }
 
@@ -35,25 +35,20 @@ namespace DiplomaAPI.Controllers
         public ActionResult<AuthenticateResponse> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
-            var response = _userService.RefreshToken(refreshToken, ipAddress());
-            setTokenCookie(response.RefreshToken);
+            var response = _userService.RefreshToken(refreshToken, IpAddress());
+            SetTokenCookie(response.RefreshToken);
             return Ok(response);
         }
 
         [HttpPost("revoke-token")]
         public IActionResult RevokeToken(RevokeTokenRequest model)
         {
-            // accept token from request body or cookie
             var token = model.Token ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required" });
 
-            // users can revoke their own tokens and admins can revoke any tokens
-            if (!User.OwnsToken(token) && User.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
-
-            _userService.RevokeToken(token, ipAddress());
+            _userService.RevokeToken(token, IpAddress());
             return Ok(new { message = "Token revoked" });
         }
 
@@ -62,7 +57,7 @@ namespace DiplomaAPI.Controllers
         public IActionResult Register(RegisterRequest model)
         {
             _userService.Register(model, Request.Headers["origin"]);
-            return Ok(new { message = "Registration successful, please check your email for verification instructions" });
+            return Ok(new { message = "Registration successful" });
         }
 
         /*[AllowAnonymous]
@@ -139,6 +134,7 @@ namespace DiplomaAPI.Controllers
             return Ok(account);
         }
 
+        [Authorize(Role.Admin)]
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
@@ -157,9 +153,17 @@ namespace DiplomaAPI.Controllers
             return Ok(account);
         }
 
+        [Authorize(Role.Admin, Role.SuperTeacher)]
+        [HttpPost("UploadProfiles")]
+        public IActionResult UploadProfiles(List<UploadProfilesRequest> model)
+        {
+            _userService.UploadProfiles(model);
+            return Ok(new { message = "Uploading successful" });
+        }
+
         // helper methods
 
-        private void setTokenCookie(string token)
+        private void SetTokenCookie(string token)
         {
             var cookieOptions = new CookieOptions
             {
@@ -169,7 +173,7 @@ namespace DiplomaAPI.Controllers
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
 
-        private string ipAddress()
+        private string IpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];

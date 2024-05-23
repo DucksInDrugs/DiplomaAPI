@@ -29,6 +29,10 @@ builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICompletedTaskRepository, CompletedTaskRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<ITestResultRepository, TestResultRepository>();
+builder.Services.AddScoped<IRandomTaskRepository, RandomTaskRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 
@@ -37,6 +41,10 @@ builder.Services.AddTransient<ITestService, TestService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<ICompletedTaskService, CompletedTaskService>();
+builder.Services.AddTransient<IGroupService, GroupService>();
+builder.Services.AddTransient<ITestResultService, TestResultService>();
+builder.Services.AddTransient<IRandomTaskService, RandomTaskService>();
+builder.Services.AddTransient<IArticleService, ArticleService>();
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", 
     builder =>
@@ -62,6 +70,7 @@ app.MapControllers();
 
 app.UseCors("CorsPolicy");
 
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<JwtMiddleware>();
 
 app.Run();

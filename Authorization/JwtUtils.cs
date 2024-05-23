@@ -29,7 +29,6 @@ namespace DiplomaAPI.Authorization
 
         public string GenerateJwtToken(User account)
         {
-            // generate token that is valid for 15 minutes
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -78,9 +77,7 @@ namespace DiplomaAPI.Authorization
         {
             var refreshToken = new RefreshToken
             {
-                // token is a cryptographically strong random sequence of values
                 Token = Convert.ToHexString(RandomNumberGenerator.GetBytes(64)),
-                // token is valid for 7 days
                 Expires = DateTime.UtcNow.AddDays(7),
                 Created = DateTime.UtcNow,
                 CreatedByIp = ipAddress
@@ -89,8 +86,6 @@ namespace DiplomaAPI.Authorization
             using (IDbConnection db = _context.CreateConnection())
             {
                 IEnumerable<RefreshToken>? token = db.Query<RefreshToken>("SELECT * FROM \"RefreshTokens\" WHERE Token = @Token", refreshToken );
-
-                // ensure token is unique by checking against db
                 var tokenIsUnique = !token.Any();
 
                 if (!tokenIsUnique)

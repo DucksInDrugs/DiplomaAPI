@@ -23,5 +23,17 @@ namespace DiplomaAPI.Models.Users
         [Required]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
+
+        public int? GroupId { get; set; }
+
+        public CreateRequest(string username, string role, string email, string password, string confirmPassword, int? groupId)
+        {
+            Username = username;
+            Role = role;
+            Email = email;
+            Password = password;
+            ConfirmPassword = confirmPassword;
+            GroupId = groupId;
+        }
     }
 }
